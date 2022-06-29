@@ -1,0 +1,14 @@
+.main {
+  position: absolute;
+  left: 250px;
+  top: 90px;
+  height: calc(100vh - 105px);
+  width: calc(100vw - 275px);
+}
+
+@media screen and (max-width: 800px) {
+  .main {
+      left: 90px;
+      width: calc(100vw - 115px);
+  }
+}

@@ -1,0 +1,19 @@
+.navbar {
+  .container {
+    
+    .navbar-collapse {
+      justify-content: end;
+
+      .navbar-nav {
+        .nav-link {
+            display: flex;
+            justify-content: end;
+        }
+
+        .nav-item{
+
+        }
+      }
+    }
+  }
+}

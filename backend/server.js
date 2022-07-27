@@ -1,6 +1,11 @@
-const express = require("express");
-const dbConnect = require("./dbConnect");
-const dotenv = require("dotenv");
+import express from 'express';
+import "./dbConnect.js";
+import dotenv from "dotenv";
+import cors from "cors";
+
+import userRoute from "./routes/usersRoute.js";
+import transactionRoute from "./routes/transactionRoute.js";
+
 const app = express();
 
 app.use(express.json());
@@ -8,15 +13,14 @@ app.use(express.urlencoded({ extended: true }));
 
 dotenv.config();
 
-const cors = require("cors");
 app.use(
   cors({
     origin: 'http://localhost:3000'
   })
 );
 
-const userRoute = require("./routes/usersRoute");
 app.use("/api/users/", userRoute);
+app.use("/api/transactions/", transactionRoute);
 
 const port = process.env.PORT || 5000;
 

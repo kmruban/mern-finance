@@ -7,7 +7,7 @@ import Account from "./screens/Account";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Summary from "./screens/Summary";
-import Transaction from "./screens/Transaction";
+import TransactionScreen from "./screens/TransactionScreen";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -15,7 +15,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
-      <ToastContainer position="bottom-center" limit={1} />
+      <ToastContainer position="top-center" limit={1} />
         <header>
           <Topbar />
         </header>
@@ -27,7 +27,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/account" element={<Account />} />
               <Route path="/summary" element={<Summary />} />
-              <Route path="/transactions" element={<Transaction />} />
+              <Route path="/transactions" element={<TransactionScreen />} />
             </Routes>
           </Container>
         </main>

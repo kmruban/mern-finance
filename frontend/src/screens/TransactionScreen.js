@@ -25,15 +25,18 @@ const reducer = (state, action) => {
 
 function TransactionScreen() {
   //const navigate = useNavigate();
-  const [type, setType] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState();
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);  
 
   const handleCloseTransactionModal = () => setShowTransactionModal(false);
   const handleShowTransactionModal = () => setShowTransactionModal(true);
+
+  const handleCloseExpenseModal = () => setShowExpenseModal(false);
+  const handleShowExpenseModal = () => setShowExpenseModal(true);
 
   const [{ transactions, error }, dispatch] = useReducer(reducer, {
     error: '',
@@ -42,13 +45,12 @@ function TransactionScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const handleSubmit = async (values) => {
+  const handleIncomeSubmit = async (values) => {
     values.preventDefault();
     try {
       await axios.post(
-        "http://localhost:5000/api/transactions/add-transaction",
+        "http://localhost:5000/api/transactions/add-income",
         {
-          type,
           amount,
           category,
           description,
@@ -60,12 +62,40 @@ function TransactionScreen() {
           },
         }
       );
-      setType("");
       setAmount("");
       setCategory("");
       setDescription("");
       setDate("");
       handleCloseTransactionModal();
+      console.log("Add Successful");
+      toast.success("Add Successful");
+    } catch (err) {
+      toast.error(getError(err));
+    }
+  };
+
+  const handleExpenseSubmit = async (values) => {
+    values.preventDefault();
+    try {
+      await axios.post(
+        "http://localhost:5000/api/transactions/add-expense",
+        {
+          amount,
+          category,
+          description,
+          date,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+      setAmount("");
+      setCategory("");
+      setDescription("");
+      setDate("");
+      handleCloseExpenseModal();
       console.log("Add Successful");
       toast.success("Add Successful");
     } catch (err) {
@@ -97,14 +127,16 @@ function TransactionScreen() {
       <Row className="mb-4 mt-3">
         <h3 className="tranasction-title">Transaction Page</h3>
       </Row>
-      <Button className="mb-4" onClick={handleShowTransactionModal}>
-        Add a new transaction
+      <Button className="mb-4 me-3" onClick={handleShowTransactionModal}>
+        Add a new income
+      </Button>
+      <Button className="mb-4" onClick={handleShowExpenseModal}>
+        Add a new expense
       </Button>
 
       <table className="table">
         <thead>
           <tr>
-            <th>TYPE</th>
             <th>AMOUNT</th>
             <th>CATEGORY</th>
             <th>DESCRIPTION</th>
@@ -114,7 +146,6 @@ function TransactionScreen() {
         <tbody>
           {transactions?.map((transaction) => (
             <tr key={transaction._id}>
-              <td>{transaction.type}</td>
               <td>{transaction.amount}</td>
               <td>{transaction.category}</td>
               <td>{transaction.description}</td>
@@ -132,21 +163,7 @@ function TransactionScreen() {
           <Modal.Title>Modal heading</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="type">
-              <Form.Label>Transaction Type</Form.Label>
-              <Form.Control
-                as="select"
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                required
-              >
-                <option>-- Pick One Below --</option>
-                <option value="income">Income</option>
-                <option value="expense">Expense</option>
-              </Form.Control>
-            </Form.Group>
-
+          <Form onSubmit={handleIncomeSubmit}>
             <Form.Group className="mb-3" controlId="amount">
               <Form.Label>Amount</Form.Label>
               <Form.Control
@@ -154,27 +171,23 @@ function TransactionScreen() {
                 onChange={(e) => setAmount(e.target.value)}
               />
             </Form.Group>
-
             <Form.Group className="mb-3" controlId="category">
               <Form.Label>Category</Form.Label>
               <Form.Control
                 required
                 as="select"
-                value={type}
                 onChange={(e) => setCategory(e.target.value)}
               >
-                <option value="rent">Rent</option>
-                <option value="food">Food</option>
-                <option value="gas">Gas</option>
+                <option></option>
+                <option value="paycheck">Paycheck</option>
+                <option value="freelance">Freelance</option>
                 <option value="other">Other</option>
               </Form.Control>
             </Form.Group>
-
             <Form.Group className="mb-3" controlId="description">
               <Form.Label>Description</Form.Label>
               <Form.Control onChange={(e) => setDescription(e.target.value)} />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Date of Transaction</Form.Label>
               <Form.Control
@@ -183,7 +196,6 @@ function TransactionScreen() {
                 onChange={(e) => setDate(e.target.value)}
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Button type="submit">Submit</Button>
             </Form.Group>
@@ -195,6 +207,62 @@ function TransactionScreen() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal
+        show={showExpenseModal}
+        onHide={handleCloseExpenseModal}
+        size="fullscreen-sm-down"
+      >
+        <Modal.Header>
+          <Modal.Title>Modal heading</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleExpenseSubmit}>
+            <Form.Group className="mb-3" controlId="amount">
+              <Form.Label>Amount</Form.Label>
+              <Form.Control
+                required
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="category">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                required
+                as="select"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option></option>
+                <option value="rent">Rent</option>
+                <option value="food">Food</option>
+                <option value="gas">Gas</option>
+                <option value="other">Other</option>
+              </Form.Control>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="description">
+              <Form.Label>Description</Form.Label>
+              <Form.Control onChange={(e) => setDescription(e.target.value)} />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Date of Transaction</Form.Label>
+              <Form.Control
+                required
+                type="date"
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Button type="submit">Submit</Button>
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleCloseExpenseModal}>
+            Cancel
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </div>
   );
 }

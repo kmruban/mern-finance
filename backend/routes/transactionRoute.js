@@ -1,17 +1,17 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
-import Transaction from "../models/Transaction.js";
+import Income from "../models/Income.js";
+import Expense from "../models/Expense.js";
 import { isAuth } from "../utils.js";
 
 const router = express.Router();
 
 router.post(
-  "/add-transaction",
+  "/add-income",
   isAuth,
   expressAsyncHandler(async (req, res) => {
     try {
-      const newTransaction = new Transaction({
-        type: req.body.type,
+      const newTransaction = new Income({
         amount: req.body.amount,
         category: req.body.category,
         description: req.body.description,
@@ -19,8 +19,29 @@ router.post(
         user: req.user._id,
       });
 
-      const trans = await newTransaction.save();
-      res.status(201).send({ message: "New Transaction Created", trans });
+      const transaction = await newTransaction.save();
+      res.status(201).send({ message: "New Transaction Created", transaction });
+    } catch (error) {
+      console.log(error);
+    }
+  })
+);
+
+router.post(
+  "/add-expense",
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    try {
+      const newTransaction = new Expense({
+        amount: req.body.amount,
+        category: req.body.category,
+        description: req.body.description,
+        date: req.body.date,
+        user: req.user._id,
+      });
+
+      const transaction = await newTransaction.save();
+      res.status(201).send({ message: "New Transaction Created", transaction });
     } catch (error) {
       console.log(error);
     }
